@@ -1,52 +1,19 @@
 import streamlit as st
 
-import cv2
+import pyxstream
 
-import m3u8
+# Get the playlist URL from the user
 
-def play_channel(url):
+playlist_url = st.text_input("Enter the playlist URL:")
 
-    playlist = m3u8.load(url)
+# Create a pyxstream player
 
-    if not playlist.is_variant:
+player = pyxstream.Player()
 
-        st.error('Invalid playlist format.')
+# Play the channel from the playlist
 
-        return
+player.play(playlist_url)
 
-    video_url = playlist.segments[0].uri
+# Display the player in the Streamlit app
 
-    cap = cv2.VideoCapture(video_url)
-
-    if not cap.isOpened():
-
-        st.error('Error opening video stream or file.')
-
-        return
-
-    while True:
-
-        ret, frame = cap.read()
-
-        if not ret:
-
-            break
-
-        st.image(frame, channels='BGR')
-
-    cap.release()
-
-def main():
-
-    st.title('IPTV Player')
-
-    url = st.text_input('Enter IPTV playlist URL')
-
-    if st.button('Play Channel'):
-
-        play_channel(url)
-
-if __name__ == '__main__':
-
-    main()
-
+st.video(player.video_stream)
